@@ -43,6 +43,7 @@ public final class ClientLogSeparator {
     }
 
     private void handle0 (BufferedReader reader, BufferedWriter writer) throws IOException, ParseException {
+        boolean succ = false;
         while (true) {
             final String line = reader.readLine();
             if (line == null) {
@@ -50,9 +51,15 @@ public final class ClientLogSeparator {
             }
             try {
                 if (rightFormat(line)) {
+                    succ = true;
                     writer.append(line).append('\n');
+                } else {
+                    succ = false;
                 }
             } catch (StringIndexOutOfBoundsException e) {
+                if (succ) {
+                    writer.append(line).append('\n');
+                }
                 e.printStackTrace();
             }
         }
