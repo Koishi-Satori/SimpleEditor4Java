@@ -1,0 +1,22 @@
+TITLE_SAVE=Save(Ctrl+S)
+TITLE_SAVE_AS=Save As(Shift+S)
+TITLE_NEW_FRAME=New Frame(Shift+N)
+TITLE_NEW_FRAME_AND_CR=New Frame and Create(Ctrl+N)
+TITLE_OPEN=Open(Ctrl+O)
+TITLE_EXIT=Exit(Alt+X)
+TITLE_FORMAT=Format
+TITLE_FONT=Font(Alt+F)
+TITLE_DATE=Insert Date(Alt+D)
+TITLE_FILE=File
+TITLE_HELP=Help
+TITLE_CLEAR_OUT=Clear Output Log(Ctrl+C)
+TITLE_CLEAR_ERR=Clear Error Log(Shift+C)
+TITLE_CLEAR_ALL=Clear All log(Alt+C)
+TITLE_HELP_IMPL=Help Document(Ctrl+H)
+TITLE_LANGUAGE=Switch Language To Chinese(Alt+S)
+TITLE_FRAME=Frame and Log
+TITLE_LOG_VIEW_OUT=Output Log Viewer
+TITLE_LOG_VIEW_ERR=Error Log Viewer
+TITLE_LOG_REPORT=Report Error(Alt+M)
+MESSAGE_REPORT=The Error report will report error log and output log to the server.\
+    Also you can input error description in the input box.

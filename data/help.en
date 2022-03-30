@@ -1,0 +1,13 @@
+This is a simple Editor with auto complete function developed by Java.
+It has some pre-defined words which mainly the most used words/key-words in Java/C++/GoLang,and other words are from the input of user.
+Author:KKoishi_(TencentQQ:1580412105)
+Github:Satori-Koishi
+URL:https://space.bilibili.com/281416853
+
+Update Log:
+1.0.1-alpha(2022/3/20):Basic function but only word tips.
+1.0.2-alpha(2022/3/23):Performance optimization and fix 2 bugs.
+1.0.2-beta(2022/3/23):Fixed 7 bugs and word complete.
+1.0.2-zeta(2022/3/24):Help page,settings.Fix one bug.
+1.0.3-alpha(2022/3/25):Add native language files,and some functions.
+Planing:Custom dict and more functions.

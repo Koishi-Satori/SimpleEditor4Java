@@ -1,0 +1,10 @@
+Text File=txt
+MarkDown File=md
+Java & JavaFX Source File=java
+Kotlin Source file=kt
+JVM Language Class File=class
+YAML File=yml,yaml
+XML File=xml
+C/C++/C# Source/Library File=cpp,c,cs,hpp,h
+Dynamic Link Library(C/C++)=dll,so
+GoLang Source File=go

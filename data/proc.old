@@ -1,0 +1,9 @@
+tab=true
+replace_tab=4
+font_size=15
+font_name=Segoe UI
+pre_x=650
+pre_y=400
+date_format=yyyy/MM/dd
+title=Editor with Auto Complete Powered by KKoishi_
+language_file=en
