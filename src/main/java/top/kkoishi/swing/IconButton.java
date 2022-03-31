@@ -1,4 +1,4 @@
-package top.kkoishi.easy.swing;
+package top.kkoishi.swing;
 
 import javax.swing.*;
 import java.awt.*;

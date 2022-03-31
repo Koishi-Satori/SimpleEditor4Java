@@ -71,7 +71,7 @@ public final class FeedBackClient {
         final ClientLogSeparator out = new ClientLogSeparator(OUT, reportOut);
         err.handle();
         //sep is 60 sec.
-        out.setSep(1000 * 60);
+        out.setSep(1000 * 300);
         out.handle();
         Files.write(reportCommit, commit);
 

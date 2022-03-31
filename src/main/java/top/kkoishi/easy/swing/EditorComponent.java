@@ -7,6 +7,8 @@ import top.kkoishi.io.FileChooser;
 import top.kkoishi.io.Files;
 import top.kkoishi.io.OptionLoader;
 import top.kkoishi.lang.PropertiesLoader;
+import top.kkoishi.swing.JVMStateDisplay;
+import top.kkoishi.swing.PopMenu;
 import top.kkoishi.util.EnhancedTrie;
 import top.kkoishi.easy.util.PassageMatcher;
 
@@ -35,30 +37,67 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static java.awt.event.InputEvent.ALT_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
-import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_C;
+import static java.awt.event.KeyEvent.VK_D;
+import static java.awt.event.KeyEvent.VK_F;
+import static java.awt.event.KeyEvent.VK_H;
+import static java.awt.event.KeyEvent.VK_L;
+import static java.awt.event.KeyEvent.VK_M;
+import static java.awt.event.KeyEvent.VK_N;
+import static java.awt.event.KeyEvent.VK_O;
+import static java.awt.event.KeyEvent.VK_P;
+import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_X;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static top.kkoishi.easy.Main.DATE_FORMAT;
+import static top.kkoishi.easy.Main.NATIVE_FILE_LOC;
 import static top.kkoishi.easy.Main.NATIVE_LANG;
+import static top.kkoishi.easy.Main.PROC;
 
 /**
  * @author KKoishi_
  */
 public final class EditorComponent extends JPanel implements Runnable {
 
+    /*-------------------------------------------------- Const Pool Start --------------------------------------------------*/
+
+    /**
+     * The path of the output log file.
+     */
     public static final String OUTPUT_LOG = "./output.log";
+
+    /**
+     * Loader for FileChooser's options.
+     */
     public static final OptionLoader OPTION_LOADER = new OptionLoader();
 
-    public static String ERROR_LOG = "./error.log";
+    /**
+     * The path of error log file.
+     */
+    public static final String ERROR_LOG = "./error.log";
 
+    /**
+     * Report message in the report JOptionPane.
+     */
     public static String MESSAGE_REPORT = NATIVE_LANG.getProperty("MESSAGE_REPORT");
 
     public static String TITLE_LOG_REPORT = NATIVE_LANG.getProperty("TITLE_LOG_REPORT");
@@ -86,9 +125,47 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     private static String fontName = Main.PROC.getProperty("font_name");
 
-    private File file = null;
 
+    private static final List<String> MENU_ITEM_TEXTS = new CopyOnWriteArrayList<>();
+
+    /*-------------------------------------------------- Const Pool End --------------------------------------------------*/
+
+    static {
+        MENU_ITEM_TEXTS.addAll(Arrays.asList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
+                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_FRAME, TITLE_LANGUAGE,
+                TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL));
+    }
+
+    /*-------------------------------------------------- Static Methods Start --------------------------------------------------*/
+
+    /**
+     * Set all the properties.(Font, title, and so on.)
+     *
+     * @param instance EditorComponent instance.
+     */
+    public static void setAll (EditorComponent instance) {
+        resetTitle();
+        instance.refreshTitle();
+        instance.changeParentTitle.accept(instance.file == null ? Main.PROC.getProperty("title") : instance.file.getName());
+        instance.display.setFont(new Font(fontName, Font.PLAIN, Integer.parseInt(Main.PROC.getProperty("font_size"))));
+        DATE_FORMAT.applyPattern(Main.PROC.getProperty("date_format"));
+    }
+
+    /**
+     * Reset all the text of the JMenu and JMenuItem instance.
+     */
     public static void resetTitle () {
+        final Properties cpy = new Properties(NATIVE_LANG);
+        NATIVE_LANG.clear();
+        try {
+            NATIVE_LANG.load(new FileInputStream(NATIVE_FILE_LOC));
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            NATIVE_LANG.putAll(cpy);
+            return;
+        }
         TITLE_SAVE = NATIVE_LANG.getProperty("TITLE_SAVE");
         TITLE_SAVE_AS = NATIVE_LANG.getProperty("TITLE_SAVE_AS");
         TITLE_NEW_FRAME = NATIVE_LANG.getProperty("TITLE_NEW_FRAME");
@@ -106,8 +183,34 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_HELP_IMPL = NATIVE_LANG.getProperty("TITLE_HELP_IMPL");
         TITLE_LANGUAGE = NATIVE_LANG.getProperty("TITLE_LANGUAGE");
         TITLE_FRAME = NATIVE_LANG.getProperty("TITLE_FRAME");
+        TITLE_LOG_REPORT = NATIVE_LANG.getProperty("TITLE_LOG_REPORT");
+        TITLE_LOG_VIEW_OUT = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_OUT");
+        TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
+        applyChangeToMenuItemTextList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
+                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_FRAME, TITLE_LANGUAGE,
+                TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL);
     }
 
+    /**
+     * Change texts list.
+     *
+     * @param texts new texts.
+     */
+    private static void applyChangeToMenuItemTextList (String... texts) {
+        if (texts.length != MENU_ITEM_TEXTS.size()) {
+            throw new IllegalArgumentException("Require array length is " + MENU_ITEM_TEXTS.size() + " , but got " + texts.length + ".");
+        } else {
+            MENU_ITEM_TEXTS.clear();
+            MENU_ITEM_TEXTS.addAll(Arrays.asList(texts));
+        }
+    }
+
+    /**
+     * Get a text pane with correct properties.
+     *
+     * @return instance of JTextPane.
+     */
     public static JTextPane getTextPane () {
         JTextPane display = new JTextPane();
         display.setRequestFocusEnabled(true);
@@ -133,6 +236,24 @@ public final class EditorComponent extends JPanel implements Runnable {
         return display;
     }
 
+    public static BufferedImage adjustSize (final BufferedImage image, int w, int h) {
+        BufferedImage cpy = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        cpy.getGraphics().drawImage(image, 0, 0, w, h, null);
+        return cpy;
+    }
+
+    private static boolean adjustRequire (BufferedImage src, int w, int h) {
+        return src.getWidth() > w || src.getHeight() > h;
+    }
+
+    /*-------------------------------------------------- Static Method End --------------------------------------------------*/
+
+    /*-------------------------------------------------- Field Start --------------------------------------------------*/
+
+    private File file = null;
+
+    private final List<Consumer<String>> applierMenuItemTexts = new CopyOnWriteArrayList<>();
+
     private final JTextPane display = getTextPane();
 
     private final PassageMatcher matcher = PassageMatcher.getInstance(display.getText());
@@ -147,9 +268,22 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     private final JMenuBar bar = new JMenuBar();
 
+    private Consumer<String> changeParentTitle;
+
     private boolean isAlive = true;
 
     private int pos = 0;
+
+    /*-------------------------------------------------- Field End --------------------------------------------------*/
+
+    public Consumer<String> getChangeParentTitle () {
+        return changeParentTitle;
+    }
+
+    public void setChangeParentTitle (Consumer<String> changeParentTitle) {
+        this.changeParentTitle = changeParentTitle;
+    }
+
 
     public void setFontName (String familyName) {
         fontName = familyName;
@@ -220,7 +354,7 @@ public final class EditorComponent extends JPanel implements Runnable {
         bar.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
         bar.setBackground(Color.WHITE);
         bar.setBorder(new LineBorder(new Color(236, 173, 173), 1, true));
-        bar.add(new JMenu(TITLE_FILE) {{
+        final JMenu fileMenu = new JMenu(TITLE_FILE) {{
             add(createItem(TITLE_SAVE, e -> save(), getKeyStroke(VK_S, CTRL_DOWN_MASK)));
             add(createItem(TITLE_SAVE_AS, e -> saveAs(), getKeyStroke(VK_S, SHIFT_DOWN_MASK)));
             addSeparator();
@@ -228,23 +362,36 @@ public final class EditorComponent extends JPanel implements Runnable {
             add(createItem(TITLE_NEW_FRAME_AND_CR, e -> newFile(), getKeyStroke(VK_N, CTRL_DOWN_MASK)));
             add(createItem(TITLE_OPEN, e -> openFile(), getKeyStroke(VK_O, CTRL_DOWN_MASK)));
             add(createItem(TITLE_EXIT, e -> System.exit(514), getKeyStroke(VK_X, ALT_DOWN_MASK)));
-        }});
-        bar.add(new JMenu(TITLE_FORMAT) {{
-            add(createItem(TITLE_FONT, EditorComponent.this::format, getKeyStroke(VK_F, ALT_DOWN_MASK)));
-            add(createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK)));
-        }});
-        bar.add(new JMenu(TITLE_FRAME) {{
-            add(createItem(TITLE_LANGUAGE, e -> switchLanguage(), getKeyStroke(VK_S, ALT_DOWN_MASK)));
-            add(createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openAsText(new File("./output.log"))), getKeyStroke(VK_P, CTRL_DOWN_MASK)));
-            add(createItem(TITLE_LOG_VIEW_ERR, e -> showNoEdit(Files.openAsText(new File("./error.log"))), getKeyStroke(VK_P, ALT_DOWN_MASK)));
-        }});
-        bar.add(new JMenu(TITLE_HELP) {{
-            add(createItem(TITLE_LOG_REPORT, e -> report(), getKeyStroke(VK_M, ALT_DOWN_MASK)));
-            add(createItem(TITLE_CLEAR_OUT, e -> clearFile(OUTPUT_LOG), getKeyStroke(VK_L, CTRL_DOWN_MASK)));
-            add(createItem(TITLE_CLEAR_ERR, e -> clearFile(ERROR_LOG), getKeyStroke(VK_L, SHIFT_DOWN_MASK)));
-            add(createItem(TITLE_CLEAR_ALL, e -> clearFiles(OUTPUT_LOG, ERROR_LOG), getKeyStroke(VK_C, ALT_DOWN_MASK)));
-            add(createItem(TITLE_HELP_IMPL, e -> showNoEdit(getHelpDoc()), getKeyStroke(VK_H, ALT_DOWN_MASK)));
-        }});
+        }};
+        applierMenuItemTexts.add(0, fileMenu::setText);
+        bar.add(fileMenu);
+        bar.add(createMenu(TITLE_FORMAT, createItem(TITLE_FONT, EditorComponent.this::format, getKeyStroke(VK_F, ALT_DOWN_MASK)),
+                createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK))
+        ));
+        bar.add(createMenu(TITLE_FRAME, createItem(TITLE_LANGUAGE, e -> switchLanguage(), getKeyStroke(VK_S, ALT_DOWN_MASK)),
+                createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openAsText(new File("./output.log"))), getKeyStroke(VK_P, CTRL_DOWN_MASK)),
+                createItem(TITLE_LOG_VIEW_ERR, e -> showNoEdit(Files.openAsText(new File("./error.log"))), getKeyStroke(VK_P, ALT_DOWN_MASK))));
+        bar.add(createMenu(TITLE_HELP, createItem(TITLE_LOG_REPORT, e -> report(), getKeyStroke(VK_M, ALT_DOWN_MASK)),
+                createItem(TITLE_CLEAR_OUT, e -> clearFile(OUTPUT_LOG), getKeyStroke(VK_L, CTRL_DOWN_MASK)),
+                createItem(TITLE_CLEAR_ERR, e -> clearFile(ERROR_LOG), getKeyStroke(VK_L, SHIFT_DOWN_MASK)),
+                createItem(TITLE_CLEAR_ALL, e -> clearFiles(OUTPUT_LOG, ERROR_LOG), getKeyStroke(VK_C, ALT_DOWN_MASK)),
+                createItem(TITLE_HELP_IMPL, e -> showNoEdit(getHelpDoc()), getKeyStroke(VK_H, ALT_DOWN_MASK))
+        ));
+    }
+
+
+    /**
+     * Refresh the parent container's title.
+     */
+    public void refreshTitle () {
+        final Iterator<Consumer<String>> actions = applierMenuItemTexts.iterator();
+        final Iterator<String> args = MENU_ITEM_TEXTS.iterator();
+        while (actions.hasNext() && args.hasNext()) {
+            final Consumer<String> action = actions.next();
+            final String arg = args.next();
+            System.out.println(arg + "->" + action);
+            action.accept(arg);
+        }
     }
 
     private String getHelpDoc () {
@@ -297,14 +444,24 @@ public final class EditorComponent extends JPanel implements Runnable {
             JOptionPane.showMessageDialog(null, e.getMessage());
             return;
         }
+        final Properties properties = new Properties();
+        properties.putAll(PROC);
+        System.out.println(properties.getProperty("language_file"));
         Main.PROC.clear();
         resetTitle();
         try {
-            Main.PROC.load(new FileInputStream("./data/proc"));
+            PROC.load(new FileInputStream("./data/proc"));
         } catch (IOException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            Main.PROC.putAll(properties);
+            return;
         }
-        JOptionPane.showMessageDialog(null, "Succ to set language.Need restart to use settings.\n成功设置语言.需要重启来应用设置.");
+        NATIVE_FILE_LOC = "./data/native." + PROC.getProperty("language_file");
+        System.out.println(NATIVE_FILE_LOC);
+        resetTitle();
+        refreshTitle();
+        JOptionPane.showMessageDialog(null, "Succ to set language.\n成功设置语言.");
     }
 
     private void openFile () {
@@ -312,7 +469,8 @@ public final class EditorComponent extends JPanel implements Runnable {
             final File file = FileChooser.file(null, "top.kkoishi.easy.FileChooser", OptionLoader.list2array(OPTION_LOADER.getOptions()));
             if (file != null) {
                 this.file = file;
-                Main.start(file.getName(), file);
+                changeParentTitle.accept(file.getName());
+                loadFile(file);
             }
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException |
                 InstantiationException | IllegalAccessException e) {
@@ -421,13 +579,24 @@ public final class EditorComponent extends JPanel implements Runnable {
         }
     }
 
+    private JMenu createMenu (String menuName, JMenuItem... items) {
+        final JMenu menu = new JMenu(menuName) {{
+            Arrays.stream(items).forEach(this::add);
+        }};
+        final int insertPos = applierMenuItemTexts.size() - items.length;
+        applierMenuItemTexts.add(insertPos, menu::setText);
+        return menu;
+    }
+
     private JMenuItem createItem (String title, ActionListener anAction, KeyStroke keyStroke) {
         System.out.println("Creating MenuItem:" + title + "->Key Stroke:" + keyStroke);
-        return new JMenuItem(title) {{
+        final JMenuItem item = new JMenuItem(title) {{
             registerKeyboardAction(anAction, keyStroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
             addActionListener(anAction);
             setBackground(Color.WHITE);
         }};
+        applierMenuItemTexts.add(item::setText);
+        return item;
     }
 
     private void saveAs (File to) throws IOException {
@@ -545,6 +714,10 @@ public final class EditorComponent extends JPanel implements Runnable {
         }
     }
 
+    /*-------------------------------------------------- Override Start --------------------------------------------------*/
+
+    /*-------------------------------------------------- Component Start --------------------------------------------------*/
+
     @Override
     public void paint (Graphics g) {
         super.paint(g);
@@ -570,18 +743,16 @@ public final class EditorComponent extends JPanel implements Runnable {
         }
     }
 
-    private boolean adjustRequire (BufferedImage src, int w, int h) {
-        return src.getWidth() > w || src.getHeight() > h;
-    }
+    /*-------------------------------------------------- Component End --------------------------------------------------*/
 
-    public static BufferedImage adjustSize (final BufferedImage image, int w, int h) {
-        BufferedImage cpy = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        cpy.getGraphics().drawImage(image, 0, 0, w, h, null);
-        return cpy;
-    }
+    /*-------------------------------------------------- Runnable Start --------------------------------------------------*/
 
     @Override
     public void run () {
         matcher.flush(display.getText());
     }
+
+    /*-------------------------------------------------- Runnable End --------------------------------------------------*/
+
+    /*-------------------------------------------------- Override End --------------------------------------------------*/
 }

@@ -142,6 +142,7 @@ public final class Main implements Runnable {
     public static EditorComponent start (String title) {
         final EditorComponent component = new EditorComponent();
         final JFrame jf = new JFrame(title);
+        component.setChangeParentTitle(jf::setTitle);
         jf.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         jf.setFont(new Font(PROC.getProperty("font_name"), Font.PLAIN, 12));
         if (!ICONS.isEmpty()) {
@@ -198,5 +199,9 @@ public final class Main implements Runnable {
 
     public static CopyOnWriteArrayList<EditorComponent> getTasks () {
         return TASKS;
+    }
+
+    public static void refreshAllTitle () {
+        TASKS.forEach(EditorComponent::refreshTitle);
     }
 }

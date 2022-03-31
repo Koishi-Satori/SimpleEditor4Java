@@ -1,4 +1,4 @@
-package top.kkoishi.easy.swing;
+package top.kkoishi.swing;
 
 import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;

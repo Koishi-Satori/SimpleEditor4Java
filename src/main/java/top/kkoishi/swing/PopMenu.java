@@ -1,4 +1,4 @@
-package top.kkoishi.easy.swing;
+package top.kkoishi.swing;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -25,7 +25,7 @@ public final class PopMenu extends JPopupMenu {
 
     private Component invoker = null;
 
-    Consumer<Object> action;
+    public Consumer<Object> action;
 
     private Deque<MouseAdapter> tasks = new LinkedList<>();
 

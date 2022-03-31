@@ -43,6 +43,7 @@ public final class ClientLogSeparator {
     }
 
     private void handle0 (BufferedReader reader, BufferedWriter writer) throws IOException, ParseException {
+        System.out.println("Start handle0:" + reader);
         boolean succ = false;
         while (true) {
             final String line = reader.readLine();
