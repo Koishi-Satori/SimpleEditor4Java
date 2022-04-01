@@ -1,5 +1,6 @@
 package top.kkoishi.easy.lang;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -31,6 +32,16 @@ public final class Unicode {
         put('>', null);
         put('.', null);
         put(',', null);
+        put(' ', null);
+        put('{', null);
+        put('}', null);
+        put('|', null);
+        put('`', null);
+        put('\t', null);
+        put('\n', null);
+        put('\r', null);
+        put('\b', null);
+        put('\\', null);
     }};
 
     private Unicode () {
@@ -68,6 +79,10 @@ public final class Unicode {
     }
 
     public static boolean test (char utfChar) {
-        return utfChar >= 'a' && utfChar <= 'z' || (utfChar >= 'A' && utfChar <= 'Z') || IGNORE_MAP.containsKey(utfChar);
+        return utfChar >= 'a' && utfChar <= 'z' || (utfChar >= 'A' && utfChar <= 'Z') || (utfChar >= '0' && utfChar <= '9') || IGNORE_MAP.containsKey(utfChar);
+    }
+
+    public static void main (String[] args) {
+        Arrays.stream(args).map(Unicode::encodeExcept).forEach(System.out::println);
     }
 }

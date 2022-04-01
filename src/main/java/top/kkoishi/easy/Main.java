@@ -214,4 +214,8 @@ public final class Main implements Runnable {
     public static void refreshAllTitle () {
         TASKS.forEach(EditorComponent::refreshTitle);
     }
+
+    public static void refreshAll () {
+        TASKS.forEach(EditorComponent::setAll);
+    }
 }

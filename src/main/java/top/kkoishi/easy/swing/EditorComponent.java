@@ -36,10 +36,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -57,22 +55,9 @@ import java.util.function.Consumer;
 import static java.awt.event.InputEvent.ALT_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
-import static java.awt.event.KeyEvent.VK_C;
-import static java.awt.event.KeyEvent.VK_D;
-import static java.awt.event.KeyEvent.VK_F;
-import static java.awt.event.KeyEvent.VK_H;
-import static java.awt.event.KeyEvent.VK_L;
-import static java.awt.event.KeyEvent.VK_M;
-import static java.awt.event.KeyEvent.VK_N;
-import static java.awt.event.KeyEvent.VK_O;
-import static java.awt.event.KeyEvent.VK_P;
-import static java.awt.event.KeyEvent.VK_S;
-import static java.awt.event.KeyEvent.VK_X;
+import static java.awt.event.KeyEvent.*;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static top.kkoishi.easy.Main.DATE_FORMAT;
-import static top.kkoishi.easy.Main.NATIVE_FILE_LOC;
-import static top.kkoishi.easy.Main.NATIVE_LANG;
-import static top.kkoishi.easy.Main.PROC;
+import static top.kkoishi.easy.Main.*;
 
 /**
  * @author KKoishi_
@@ -100,7 +85,6 @@ public final class EditorComponent extends JPanel implements Runnable {
      * Report message in the report JOptionPane.
      */
     public static String MESSAGE_REPORT = NATIVE_LANG.getProperty("MESSAGE_REPORT");
-
     public static String TITLE_LOG_REPORT = NATIVE_LANG.getProperty("TITLE_LOG_REPORT");
     public static String TITLE_SAVE = NATIVE_LANG.getProperty("TITLE_SAVE");
     public static String TITLE_SAVE_AS = NATIVE_LANG.getProperty("TITLE_SAVE_AS");
@@ -111,6 +95,9 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static String TITLE_FORMAT = NATIVE_LANG.getProperty("TITLE_FORMAT");
     public static String TITLE_FONT = NATIVE_LANG.getProperty("TITLE_FONT");
     public static String TITLE_DATE = NATIVE_LANG.getProperty("TITLE_DATE");
+    public static String TITLE_DATE_FORMAT = NATIVE_LANG.getProperty("TITLE_DATE_FORMAT");
+    public static String TITLE_FRAME_SETTINGS = NATIVE_LANG.getProperty("TITLE_FRAME_SETTINGS");
+    public static String TITLE_INSERT_TIME = NATIVE_LANG.getProperty("TITLE_INSERT_TIME");
     public static String TITLE_FILE = NATIVE_LANG.getProperty("TITLE_FILE");
     public static String TITLE_HELP = NATIVE_LANG.getProperty("TITLE_HELP");
     public static String TITLE_CLEAR_OUT = NATIVE_LANG.getProperty("TITLE_CLEAR_OUT");
@@ -132,9 +119,9 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     static {
         MENU_ITEM_TEXTS.addAll(Arrays.asList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
-                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_FRAME, TITLE_LANGUAGE,
-                TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
-                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL));
+                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_DATE_FORMAT, TITLE_FRAME_SETTINGS,
+                TITLE_INSERT_TIME, TITLE_FRAME, TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR,
+                TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT, TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL));
     }
 
     /*-------------------------------------------------- Static Methods Start --------------------------------------------------*/
@@ -175,6 +162,9 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_FORMAT = NATIVE_LANG.getProperty("TITLE_FORMAT");
         TITLE_FONT = NATIVE_LANG.getProperty("TITLE_FONT");
         TITLE_DATE = NATIVE_LANG.getProperty("TITLE_DATE");
+        TITLE_DATE_FORMAT = NATIVE_LANG.getProperty("TITLE_DATE_FORMAT");
+        TITLE_FRAME_SETTINGS = NATIVE_LANG.getProperty("TITLE_FRAME_SETTINGS");
+        TITLE_INSERT_TIME = NATIVE_LANG.getProperty("TITLE_INSERT_TIME");
         TITLE_FILE = NATIVE_LANG.getProperty("TITLE_FILE");
         TITLE_HELP = NATIVE_LANG.getProperty("TITLE_HELP");
         TITLE_CLEAR_OUT = NATIVE_LANG.getProperty("TITLE_CLEAR_OUT");
@@ -187,9 +177,9 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_LOG_VIEW_OUT = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_OUT");
         TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
         applyChangeToMenuItemTextList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
-                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_FRAME, TITLE_LANGUAGE,
-                TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
-                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL);
+                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_DATE_FORMAT, TITLE_FRAME_SETTINGS,
+                TITLE_INSERT_TIME, TITLE_FRAME, TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR,
+                TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT, TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL);
     }
 
     /**
@@ -370,7 +360,10 @@ public final class EditorComponent extends JPanel implements Runnable {
         applierMenuItemTexts.add(0, fileMenu::setText);
         bar.add(fileMenu);
         bar.add(createMenu(TITLE_FORMAT, createItem(TITLE_FONT, EditorComponent.this::format, getKeyStroke(VK_F, ALT_DOWN_MASK)),
-                createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK))
+                createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK)),
+                createItem(TITLE_DATE_FORMAT, e -> dateFormat(), getKeyStroke(VK_INSERT, SHIFT_DOWN_MASK)),
+                createItem(TITLE_FRAME_SETTINGS, e -> frameSetting(), getKeyStroke(VK_HOME, SHIFT_DOWN_MASK)),
+                createItem(TITLE_INSERT_TIME, e -> insertTime(), getKeyStroke(VK_INSERT, ALT_DOWN_MASK))
         ));
         bar.add(createMenu(TITLE_FRAME, createItem(TITLE_LANGUAGE, e -> switchLanguage(), getKeyStroke(VK_S, ALT_DOWN_MASK)),
                 createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openOrDefault(new File("./output.log"), "Failed to open.")), getKeyStroke(VK_P, CTRL_DOWN_MASK)),
@@ -384,6 +377,52 @@ public final class EditorComponent extends JPanel implements Runnable {
         ));
     }
 
+    private void insertTime () {
+        insertDate("hh:mm:ss");
+    }
+
+    private void frameSetting () {
+        final String title = JOptionPane.showInputDialog(EditorComponent.this, "Input new title of the frame\n输入新窗口标题", PROC.getProperty("title"));
+        if (title != null) {
+            PROC.replace("title", title);
+            try {
+                writeProc();
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+            changeParentTitle.accept(title);
+        }
+    }
+
+    private void dateFormat () {
+        /*
+        Formats:
+        yyyy/MM/dd
+        dd/MM/yyyy
+        MM/dd/yyyy
+        hh:mm:ss yyyy/MM/dd
+        hh:mm:ss dd/MM/yyyy
+        hh:mm:ss MM/dd/yyyy
+        yyyy/MM/dd hh:mm:ss
+        dd/MM/yyyy hh:mm:ss
+        MM/dd/yyyy hh:mm:ss
+        hh:mm:ss yyyy/MM/dd
+        hh:mm:ss dd/MM/yyyy
+        hh:mm:ss MM/dd/yyyy
+         */
+        final String format = (String) JOptionPane.showInputDialog(EditorComponent.this, NATIVE_LANG.getProperty("MESSAGE_DATE_FORMAT"),
+                "DateFormat日期格式", JOptionPane.QUESTION_MESSAGE, null, new Object[]{"yyyy/MM/dd", "dd/MM/yyyy", "MM/dd/yyyy",
+                        "yyyy-MM-dd", "dd-MM-yyyy", "MM-dd-yyyy", "yyyy_MM_dd", "dd_MM_yyyy", "MM_dd_yyyy"}, "yyyy/MM/dd");
+        if (format != null) {
+            PROC.replace("date_format", format);
+            try {
+                writeProc();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        }
+    }
 
     /**
      * Refresh the parent container's title.
@@ -444,7 +483,7 @@ public final class EditorComponent extends JPanel implements Runnable {
         NATIVE_FILE_LOC = "./data/native." + PROC.getProperty("language_file");
         System.out.println(NATIVE_FILE_LOC);
         resetTitle();
-        refreshTitle();
+        Main.refreshAllTitle();
         JOptionPane.showMessageDialog(null, "Succ to set language.\n成功设置语言.");
     }
 
@@ -479,8 +518,35 @@ public final class EditorComponent extends JPanel implements Runnable {
         return Main.DATE_FORMAT.format(new Date(System.currentTimeMillis()));
     }
 
+    @SuppressWarnings("all")
     private void format (ActionEvent e) {
         //TODO:finish format frame.
+        new Thread(() -> {
+            final var fp = FormatPane.display(display.getFont());
+            while (!fp.isDisposed()) {
+                try {
+                    Thread.sleep(35);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    break;
+                }
+            }
+            final Font newFont = fp.font();
+            System.gc();
+            display.setFont(newFont);
+            setFontName(newFont.getFontName());
+            PROC.setProperty("font_name", fontName);
+            PROC.setProperty("font_size", Integer.toString(newFont.getSize()));
+            try {
+                Main.writeProc();
+                Main.refreshAll();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            } finally {
+                fp.removeAll();
+            }
+            System.gc();
+        }).start();
     }
 
     private void clearFile (String path) {

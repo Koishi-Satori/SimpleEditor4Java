@@ -18,5 +18,10 @@ TITLE_FRAME=Frame and Log
 TITLE_LOG_VIEW_OUT=Output Log Viewer
 TITLE_LOG_VIEW_ERR=Error Log Viewer
 TITLE_LOG_REPORT=Report Error(Alt+M)
+TITLE_DATE_FORMAT=Date Format
+TITLE_FRAME_SETTINGS=Frame Settings
+TITLE_INSERT_TIME=Insert Time(Alt+Insert)
+TITLE_TIME_FORMAT=Time Format
 MESSAGE_REPORT=The Error report will report error log and output log to the server.\
     Also you can input error description in the input box.
+MESSAGE_DATE_FORMAT=Choose date format.
