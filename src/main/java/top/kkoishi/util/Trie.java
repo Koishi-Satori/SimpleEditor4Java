@@ -31,7 +31,7 @@ public final class Trie implements DictAccess {
     }
 
     public static Trie build (File f) throws IOException {
-        final String str = Files.read(f);
+        final String str = Files.readDirectly(f);
         final WordTokenizer tokenizer = new WordTokenizer();
         tokenizer.load(str);
         tokenizer.tokenize();

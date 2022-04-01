@@ -24,7 +24,6 @@ import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
-import javax.swing.text.DefaultHighlighter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -42,6 +41,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -124,7 +125,6 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static File backgroundFile = null;
 
     private static String fontName = Main.PROC.getProperty("font_name");
-
 
     private static final List<String> MENU_ITEM_TEXTS = new CopyOnWriteArrayList<>();
 
@@ -214,7 +214,6 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static JTextPane getTextPane () {
         JTextPane display = new JTextPane();
         display.setRequestFocusEnabled(true);
-        display.setHighlighter(new DefaultHighlighter());
         display.setFont(new Font(fontName, Font.PLAIN, Integer.parseInt(Main.PROC.getProperty("font_size"))));
         display.setSelectionColor(Color.PINK);
         display.setCaretColor(Color.MAGENTA);
@@ -230,8 +229,7 @@ public final class EditorComponent extends JPanel implements Runnable {
                 }
             });
         }
-        display.setAutoscrolls(true);
-        display.setOpaque(true);
+        display.setAutoscrolls(false);
         System.out.println("Load text pane succ:" + display);
         return display;
     }
@@ -244,6 +242,10 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     private static boolean adjustRequire (BufferedImage src, int w, int h) {
         return src.getWidth() > w || src.getHeight() > h;
+    }
+
+    public static Font accessFont () {
+        return new Font(fontName, Font.PLAIN, Integer.parseInt(Main.PROC.getProperty("font_size")));
     }
 
     /*-------------------------------------------------- Static Method End --------------------------------------------------*/
@@ -273,6 +275,8 @@ public final class EditorComponent extends JPanel implements Runnable {
     private boolean isAlive = true;
 
     private int pos = 0;
+
+    private Charset charset = StandardCharsets.UTF_8;
 
     /*-------------------------------------------------- Field End --------------------------------------------------*/
 
@@ -308,7 +312,7 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     public void loadFile (File file) {
         try {
-            display.setText(Files.read(file));
+            display.setText(Files.readDirectly(file, charset));
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
             Main.start(Main.title);
@@ -369,13 +373,14 @@ public final class EditorComponent extends JPanel implements Runnable {
                 createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK))
         ));
         bar.add(createMenu(TITLE_FRAME, createItem(TITLE_LANGUAGE, e -> switchLanguage(), getKeyStroke(VK_S, ALT_DOWN_MASK)),
-                createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openAsText(new File("./output.log"))), getKeyStroke(VK_P, CTRL_DOWN_MASK)),
-                createItem(TITLE_LOG_VIEW_ERR, e -> showNoEdit(Files.openAsText(new File("./error.log"))), getKeyStroke(VK_P, ALT_DOWN_MASK))));
+                createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openOrDefault(new File("./output.log"), "Failed to open.")), getKeyStroke(VK_P, CTRL_DOWN_MASK)),
+                createItem(TITLE_LOG_VIEW_ERR, e -> showNoEdit(Files.openOrDefault(new File("./error.log"), "Failed to open.")), getKeyStroke(VK_P, ALT_DOWN_MASK))));
         bar.add(createMenu(TITLE_HELP, createItem(TITLE_LOG_REPORT, e -> report(), getKeyStroke(VK_M, ALT_DOWN_MASK)),
                 createItem(TITLE_CLEAR_OUT, e -> clearFile(OUTPUT_LOG), getKeyStroke(VK_L, CTRL_DOWN_MASK)),
                 createItem(TITLE_CLEAR_ERR, e -> clearFile(ERROR_LOG), getKeyStroke(VK_L, SHIFT_DOWN_MASK)),
                 createItem(TITLE_CLEAR_ALL, e -> clearFiles(OUTPUT_LOG, ERROR_LOG), getKeyStroke(VK_C, ALT_DOWN_MASK)),
-                createItem(TITLE_HELP_IMPL, e -> showNoEdit(getHelpDoc()), getKeyStroke(VK_H, ALT_DOWN_MASK))
+                createItem(TITLE_HELP_IMPL, e -> showNoEdit(Files.openOrDefault(new File("./data/help." + Main.PROC.getProperty("language_file")),
+                        "Failed to open.")), getKeyStroke(VK_H, ALT_DOWN_MASK))
         ));
     }
 
@@ -391,27 +396,6 @@ public final class EditorComponent extends JPanel implements Runnable {
             final String arg = args.next();
             System.out.println(arg + "->" + action);
             action.accept(arg);
-        }
-    }
-
-    private String getHelpDoc () {
-        try {
-            final BufferedReader reader = new BufferedReader(new FileReader("./data/help." + Main.PROC.getProperty("language_file")));
-            final StringBuilder sb = new StringBuilder();
-
-            while (true) {
-                final String buffer = reader.readLine();
-                if (buffer != null) {
-                    sb.append(buffer).append('\n');
-                } else {
-                    break;
-                }
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, e);
-            e.printStackTrace();
-            return "Failed to load help doc.";
         }
     }
 

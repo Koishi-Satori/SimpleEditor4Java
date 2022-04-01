@@ -1,6 +1,9 @@
 package top.kkoishi.swing;
 
 import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicLabelUI;
+import javax.swing.plaf.metal.MetalLabelUI;
+import javax.swing.plaf.multi.MultiLabelUI;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 

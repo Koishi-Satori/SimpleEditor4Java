@@ -1,4 +1,4 @@
-#Thu Mar 31 12:47:17 CST 2022
+#Fri Apr 01 11:50:34 CST 2022
 pre_y=400
 replace_tab=4
 pre_x=650
@@ -9,4 +9,4 @@ font_size=15
 date_format=yyyy/MM/dd
 title=Editor with Auto Complete Powered by KKoishi_
 feedback_ip=127.0.0.1
-font_name=Segoe UI
+font_name=\u5FAE\u8F6F\u96C5\u9ED1

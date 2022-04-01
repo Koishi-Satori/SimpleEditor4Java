@@ -10,12 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is a trie implementation with capability to add upper-case letter(in English).
@@ -28,7 +23,7 @@ public final class EnhancedTrie implements DictAccess {
 
     private static final int EXTEND_LENGTH = 2 * LETTER_AMOUNT;
 
-    public static final int UPPER_FIRST = 65;
+    private static final int UPPER_FIRST = 65;
 
     private static final int UPPER_INDEX = LETTER_AMOUNT - UPPER_FIRST;
 
@@ -38,9 +33,9 @@ public final class EnhancedTrie implements DictAccess {
 
     private static final int CHAR_BUFFER_SIZE = 1 << 8;
 
-    Node root = new Node('\u0001', false, null);
+    private final Node root = new Node('\u0001', false, null);
 
-    int size = 0;
+    private int size = 0;
 
     public EnhancedTrie (DictAccess dict) {
         this();
@@ -82,7 +77,7 @@ public final class EnhancedTrie implements DictAccess {
     }
 
     public static EnhancedTrie build (File file) throws IOException {
-        return build(Files.read(file));
+        return build(Files.readDirectly(file));
     }
 
     public static EnhancedTrie build (String document) {
@@ -117,14 +112,14 @@ public final class EnhancedTrie implements DictAccess {
     }
 
     private static Node[] basicArray () {
-        Node[] nodes = new Node[LETTER_AMOUNT];
-        for (int i = 0; i < LETTER_AMOUNT; i++) {
+        final Node[] nodes = new Node[LETTER_AMOUNT];
+        for (int i = 0; i < LETTER_AMOUNT; ++i) {
             nodes[i] = new Node(index2lower(i), false, null);
         }
         return nodes;
     }
 
-    public static Node[] extendCharArray (Node[] arr) {
+    private static Node[] extendCharArray (Node[] arr) {
         if (arr.length > LETTER_AMOUNT) {
             return arr;
         }
@@ -476,7 +471,16 @@ public final class EnhancedTrie implements DictAccess {
      */
     @Override
     public void clear () {
-        //TODO
+        clear0(root);
+    }
+
+    private void clear0 (Node root) {
+        if (root.nodes != null) {
+            Arrays.stream(root.nodes).forEach(this::clear0);
+            root.nodes = null;
+        }
+        root.frequency = 0;
+        root.isLeaf = false;
     }
 
     @Override

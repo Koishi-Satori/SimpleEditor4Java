@@ -21,6 +21,14 @@ public final class FileChooser implements Serializable {
             this.extensions = extensions;
         }
 
+        public String getInfo () {
+            return info;
+        }
+
+        public String[] getExtensions () {
+            return extensions;
+        }
+
         @Override
         public String toString () {
             return "Option{" +

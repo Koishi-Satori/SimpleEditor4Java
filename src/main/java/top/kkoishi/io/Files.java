@@ -1,6 +1,7 @@
 package top.kkoishi.io;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -30,9 +31,49 @@ public final class Files {
         return null;
     }
 
+    public static String openOrDefault (File f, String defaultStr) {
+        try {
+            final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+            byte[] buf = bis.readNBytes(bis.available());
+            final String str = new String(buf, StandardCharsets.UTF_8);
+            buf = null;
+            bis.close();
+            return str;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return defaultStr;
+    }
+
     public static String read (File f) throws IOException {
         try {
             return openAsText(f);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
+    public static String readDirectly (File f) throws IOException {
+        try {
+            final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+            byte[] buf = bis.readNBytes(bis.available());
+            final String str = new String(buf);
+            buf = null;
+            bis.close();
+            return str;
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
+    public static String readDirectly (File f, Charset charset) throws IOException {
+        try {
+            final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+            byte[] buf = bis.readNBytes(bis.available());
+            final String str = new String(buf, charset);
+            buf = null;
+            bis.close();
+            return str;
         } catch (Exception e) {
             throw new IOException(e);
         }

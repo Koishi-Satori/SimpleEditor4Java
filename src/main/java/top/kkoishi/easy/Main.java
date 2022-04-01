@@ -7,9 +7,7 @@ import top.kkoishi.easy.swing.EditorComponent;
 import top.kkoishi.util.KoishiLogger;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
@@ -57,6 +55,8 @@ public final class Main implements Runnable {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat();
 
+    public static LookAndFeel JDK_DEFAULT_LOOK_AND_FEEL;
+
     public static void writeProc () throws IOException {
         PROC.store(new FileOutputStream(DATA_PROC), null);
     }
@@ -69,6 +69,16 @@ public final class Main implements Runnable {
         err.useErr = true;
         System.setOut(out);
         System.setErr(err);
+        try {
+            JDK_DEFAULT_LOOK_AND_FEEL = UIManager.createLookAndFeel("Metal");
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
         try {
             PROC.load(new FileInputStream(DATA_PROC));
         } catch (IOException e) {
