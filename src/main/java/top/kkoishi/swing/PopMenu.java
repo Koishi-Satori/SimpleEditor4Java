@@ -90,7 +90,6 @@ public final class PopMenu extends JPopupMenu {
 
     @Override
     public void show (Component invoker, int x, int y) {
-        System.out.println("Initializing Tip Menu");
         this.invoker = invoker;
         for (String word : words) {
             final JMenuItem i = add(word);

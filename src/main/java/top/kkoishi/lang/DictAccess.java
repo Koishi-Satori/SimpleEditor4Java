@@ -14,7 +14,7 @@ public interface DictAccess {
      * Add a new word into the dict.
      *
      * @param word word to be added.
-     * @return
+     * @return true if succ
      */
     boolean add (String word);
 

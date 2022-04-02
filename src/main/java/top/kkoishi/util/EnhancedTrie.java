@@ -104,11 +104,8 @@ public final class EnhancedTrie implements DictAccess {
         return (char) (index - UPPER_INDEX);
     }
 
-    public static void checkRange (char c) {
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-            return;
-        }
-        throw new IllegalArgumentException();
+    public static boolean checkRange (char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
     private static Node[] basicArray () {
@@ -132,16 +129,18 @@ public final class EnhancedTrie implements DictAccess {
         return arr;
     }
 
-    private void link (Node node, char[] cs, int pos) {
+    private boolean link (Node node, char[] cs, int pos) {
         if (pos >= cs.length) {
             if (node.frequency == 0) {
                 node.isLeaf = true;
                 ++size;
             }
             ++node.frequency;
-            return;
+            return true;
         }
-        checkRange(cs[pos]);
+        if (!checkRange(cs[pos])) {
+            return false;
+        }
         if (node.frequency == 0 || node.nodes == null) {
             node.nodes = basicArray();
         }
@@ -151,7 +150,7 @@ public final class EnhancedTrie implements DictAccess {
         if (Trie.extend(cs[pos])) {
             node.nodes = extendCharArray(node.nodes);
         }
-        link(node.nodes[char2index(cs[pos])], cs, pos + 1);
+        return link(node.nodes[char2index(cs[pos])], cs, pos + 1);
     }
 
     private boolean unlink (Node node, char[] cs, int pos) {
@@ -374,8 +373,10 @@ public final class EnhancedTrie implements DictAccess {
      */
     @Override
     public boolean add (String word) {
-        link(root, word.toCharArray(), 0);
-        return true;
+        if (word.length() == 0) {
+            return false;
+        }
+        return link(root, word.toCharArray(), 0);
     }
 
     public static void main (String[] args) throws IOException {

@@ -56,8 +56,6 @@ public final class PassageMatcher {
 
     private final DictAccess dict = new EnhancedTrie();
 
-    private final Deque<String> added = new LinkedList<>();
-
     public boolean contains (String word) {
         return dict.contains(word);
     }
@@ -76,9 +74,7 @@ public final class PassageMatcher {
     }
 
     public void remove (String word) {
-        if (added.remove(word)) {
-            dict.remove(word);
-        }
+        System.out.println("Remove word state:" + dict.remove(word));
     }
 
     public List<String> predict (String prefix) {
@@ -90,7 +86,6 @@ public final class PassageMatcher {
         buffer.forEach(sb::append);
         if (dict.add(sb.toString())) {
             System.out.println("Add new word:" + sb);
-            added.offer(sb.toString());
         } else {
             System.out.println("Failed to add:" + sb);
         }
@@ -98,7 +93,6 @@ public final class PassageMatcher {
 
     public void clear () {
         dict.clear();
-        added.clear();
     }
 
     public static DictAccess readDict (String src) throws IOException {

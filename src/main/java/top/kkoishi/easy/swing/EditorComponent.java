@@ -2,6 +2,7 @@ package top.kkoishi.easy.swing;
 
 import top.kkoishi.easy.Main;
 import top.kkoishi.concurrent.DefaultThreadFactory;
+import top.kkoishi.easy.lang.Unicode;
 import top.kkoishi.easy.net.client.FeedBackClient;
 import top.kkoishi.io.FileChooser;
 import top.kkoishi.io.Files;
@@ -13,16 +14,7 @@ import top.kkoishi.util.EnhancedTrie;
 import top.kkoishi.easy.util.PassageMatcher;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -57,7 +49,11 @@ import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static top.kkoishi.easy.Main.*;
+import static top.kkoishi.easy.Main.DATE_FORMAT;
+import static top.kkoishi.easy.Main.NATIVE_FILE_LOC;
+import static top.kkoishi.easy.Main.NATIVE_LANG;
+import static top.kkoishi.easy.Main.PROC;
+import static top.kkoishi.easy.Main.writeProc;
 
 /**
  * @author KKoishi_
@@ -92,12 +88,22 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static String TITLE_NEW_FRAME_AND_CR = NATIVE_LANG.getProperty("TITLE_NEW_FRAME_AND_CR");
     public static String TITLE_OPEN = NATIVE_LANG.getProperty("TITLE_OPEN");
     public static String TITLE_EXIT = NATIVE_LANG.getProperty("TITLE_EXIT");
+    public static String TITLE_TRANSLATE_UNICODE = NATIVE_LANG.getProperty("TITLE_TRANSLATE_UNICODE");
+    public static String TITLE_DECODE_UNICODE = NATIVE_LANG.getProperty("TITLE_DECODE_UNICODE");
+    public static String TITLE_UNICODE = NATIVE_LANG.getProperty("TITLE_UNICODE");
     public static String TITLE_FORMAT = NATIVE_LANG.getProperty("TITLE_FORMAT");
     public static String TITLE_FONT = NATIVE_LANG.getProperty("TITLE_FONT");
-    public static String TITLE_DATE = NATIVE_LANG.getProperty("TITLE_DATE");
+    public static String TITLE_CHARSET = NATIVE_LANG.getProperty("TITLE_CHARSET");
+    public static String TITLE_INSERT_DATE = NATIVE_LANG.getProperty("TITLE_INSERT_DATE");
     public static String TITLE_DATE_FORMAT = NATIVE_LANG.getProperty("TITLE_DATE_FORMAT");
     public static String TITLE_FRAME_SETTINGS = NATIVE_LANG.getProperty("TITLE_FRAME_SETTINGS");
     public static String TITLE_INSERT_TIME = NATIVE_LANG.getProperty("TITLE_INSERT_TIME");
+    public static String TITLE_EDIT = NATIVE_LANG.getProperty("TITLE_EDIT");
+    public static String TITLE_FIND = NATIVE_LANG.getProperty("TITLE_FIND");
+    public static String TITLE_REPLACE = NATIVE_LANG.getProperty("TITLE_REPLACE");
+    public static String TITLE_SELECT_ALL = NATIVE_LANG.getProperty("TITLE_SELECT_ALL");
+    public static String TITLE_AUTO_SCROLL = NATIVE_LANG.getProperty(
+            Boolean.parseBoolean(PROC.getProperty("auto_scroll")) ? "TITLE_AUTO_SCROLL_0" : "TITLE_AUTO_SCROLL_1");
     public static String TITLE_FILE = NATIVE_LANG.getProperty("TITLE_FILE");
     public static String TITLE_HELP = NATIVE_LANG.getProperty("TITLE_HELP");
     public static String TITLE_CLEAR_OUT = NATIVE_LANG.getProperty("TITLE_CLEAR_OUT");
@@ -108,6 +114,8 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static String TITLE_FRAME = NATIVE_LANG.getProperty("TITLE_FRAME");
     public static String TITLE_LOG_VIEW_OUT = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_OUT");
     public static String TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
+    public static String TITLE_HOW_TO_USE = NATIVE_LANG.getProperty("TITLE_HOW_TO_USE");
+    public static String TITLE_RELOAD_ALL = NATIVE_LANG.getProperty("TITLE_RELOAD_ALL");
 
     public static File backgroundFile = null;
 
@@ -118,10 +126,12 @@ public final class EditorComponent extends JPanel implements Runnable {
     /*-------------------------------------------------- Const Pool End --------------------------------------------------*/
 
     static {
-        MENU_ITEM_TEXTS.addAll(Arrays.asList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
-                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_DATE_FORMAT, TITLE_FRAME_SETTINGS,
-                TITLE_INSERT_TIME, TITLE_FRAME, TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR,
-                TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT, TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL));
+        MENU_ITEM_TEXTS.addAll(Arrays.asList(TITLE_FILE, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR, TITLE_OPEN, TITLE_SAVE,
+                TITLE_SAVE_AS, TITLE_RELOAD_ALL, TITLE_TRANSLATE_UNICODE, TITLE_DECODE_UNICODE, TITLE_UNICODE, TITLE_EXIT, TITLE_FORMAT,
+                TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS, TITLE_EDIT,
+                TITLE_FIND, TITLE_REPLACE, TITLE_SELECT_ALL, TITLE_INSERT_TIME, TITLE_INSERT_DATE, TITLE_FRAME,
+                TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE));
     }
 
     /*-------------------------------------------------- Static Methods Start --------------------------------------------------*/
@@ -158,13 +168,23 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_NEW_FRAME = NATIVE_LANG.getProperty("TITLE_NEW_FRAME");
         TITLE_NEW_FRAME_AND_CR = NATIVE_LANG.getProperty("TITLE_NEW_FRAME_AND_CR");
         TITLE_OPEN = NATIVE_LANG.getProperty("TITLE_OPEN");
+        TITLE_TRANSLATE_UNICODE = NATIVE_LANG.getProperty("TITLE_TRANSLATE_UNICODE");
+        TITLE_DECODE_UNICODE = NATIVE_LANG.getProperty("TITLE_DECODE_UNICODE");
+        TITLE_UNICODE = NATIVE_LANG.getProperty("TITLE_UNICODE");
         TITLE_EXIT = NATIVE_LANG.getProperty("TITLE_EXIT");
         TITLE_FORMAT = NATIVE_LANG.getProperty("TITLE_FORMAT");
         TITLE_FONT = NATIVE_LANG.getProperty("TITLE_FONT");
-        TITLE_DATE = NATIVE_LANG.getProperty("TITLE_DATE");
+        TITLE_CHARSET = NATIVE_LANG.getProperty("TITLE_CHARSET");
+        TITLE_INSERT_DATE = NATIVE_LANG.getProperty("TITLE_INSERT_DATE");
         TITLE_DATE_FORMAT = NATIVE_LANG.getProperty("TITLE_DATE_FORMAT");
         TITLE_FRAME_SETTINGS = NATIVE_LANG.getProperty("TITLE_FRAME_SETTINGS");
         TITLE_INSERT_TIME = NATIVE_LANG.getProperty("TITLE_INSERT_TIME");
+        TITLE_EDIT = NATIVE_LANG.getProperty("TITLE_EDIT");
+        TITLE_FIND = NATIVE_LANG.getProperty("TITLE_FIND");
+        TITLE_REPLACE = NATIVE_LANG.getProperty("TITLE_REPLACE");
+        TITLE_SELECT_ALL = NATIVE_LANG.getProperty("TITLE_SELECT_ALL");
+        TITLE_AUTO_SCROLL = NATIVE_LANG.getProperty(
+                Boolean.parseBoolean(PROC.getProperty("auto_scroll")) ? "TITLE_AUTO_SCROLL_0" : "TITLE_AUTO_SCROLL_1");
         TITLE_FILE = NATIVE_LANG.getProperty("TITLE_FILE");
         TITLE_HELP = NATIVE_LANG.getProperty("TITLE_HELP");
         TITLE_CLEAR_OUT = NATIVE_LANG.getProperty("TITLE_CLEAR_OUT");
@@ -176,10 +196,14 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_LOG_REPORT = NATIVE_LANG.getProperty("TITLE_LOG_REPORT");
         TITLE_LOG_VIEW_OUT = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_OUT");
         TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
-        applyChangeToMenuItemTextList(TITLE_FILE, TITLE_SAVE, TITLE_SAVE_AS, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR,
-                TITLE_OPEN, TITLE_EXIT, TITLE_FORMAT, TITLE_FONT, TITLE_DATE, TITLE_DATE_FORMAT, TITLE_FRAME_SETTINGS,
-                TITLE_INSERT_TIME, TITLE_FRAME, TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR,
-                TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT, TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL);
+        TITLE_HOW_TO_USE = NATIVE_LANG.getProperty("TITLE_HOW_TO_USE");
+        TITLE_RELOAD_ALL = NATIVE_LANG.getProperty("TITLE_RELOAD_ALL");
+        applyChangeToMenuItemTextList(TITLE_FILE, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR, TITLE_OPEN, TITLE_SAVE,
+                TITLE_SAVE_AS, TITLE_RELOAD_ALL, TITLE_TRANSLATE_UNICODE, TITLE_DECODE_UNICODE, TITLE_UNICODE, TITLE_EXIT,
+                TITLE_FORMAT, TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS,
+                TITLE_EDIT, TITLE_FIND, TITLE_REPLACE, TITLE_SELECT_ALL, TITLE_INSERT_TIME, TITLE_INSERT_DATE, TITLE_FRAME,
+                TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE);
     }
 
     /**
@@ -219,8 +243,8 @@ public final class EditorComponent extends JPanel implements Runnable {
                 }
             });
         }
-        display.setAutoscrolls(false);
-        System.out.println("Load text pane succ:" + display);
+        display.setAutoscrolls(Boolean.parseBoolean(PROC.getProperty("auto_scroll")));
+        System.out.println("Load text pane succ:" + display + "-->AutoScroll State:" + display.getAutoscrolls());
         return display;
     }
 
@@ -270,14 +294,9 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     /*-------------------------------------------------- Field End --------------------------------------------------*/
 
-    public Consumer<String> getChangeParentTitle () {
-        return changeParentTitle;
-    }
-
     public void setChangeParentTitle (Consumer<String> changeParentTitle) {
         this.changeParentTitle = changeParentTitle;
     }
-
 
     public void setFontName (String familyName) {
         fontName = familyName;
@@ -348,23 +367,26 @@ public final class EditorComponent extends JPanel implements Runnable {
         bar.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
         bar.setBackground(Color.WHITE);
         bar.setBorder(new LineBorder(new Color(236, 173, 173), 1, true));
-        final JMenu fileMenu = new JMenu(TITLE_FILE) {{
-            add(createItem(TITLE_SAVE, e -> save(), getKeyStroke(VK_S, CTRL_DOWN_MASK)));
-            add(createItem(TITLE_SAVE_AS, e -> saveAs(), getKeyStroke(VK_S, SHIFT_DOWN_MASK)));
-            addSeparator();
-            add(createItem(TITLE_NEW_FRAME, e -> Main.start(Main.title), getKeyStroke(VK_N, SHIFT_DOWN_MASK)));
-            add(createItem(TITLE_NEW_FRAME_AND_CR, e -> newFile(), getKeyStroke(VK_N, CTRL_DOWN_MASK)));
-            add(createItem(TITLE_OPEN, e -> openFile(), getKeyStroke(VK_O, CTRL_DOWN_MASK)));
-            add(createItem(TITLE_EXIT, e -> System.exit(514), getKeyStroke(VK_X, ALT_DOWN_MASK)));
-        }};
-        applierMenuItemTexts.add(0, fileMenu::setText);
-        bar.add(fileMenu);
+        bar.add(createMenu(TITLE_FILE, createItem(TITLE_NEW_FRAME, e -> Main.start(Main.title), getKeyStroke(VK_N, SHIFT_DOWN_MASK)),
+                createItem(TITLE_NEW_FRAME_AND_CR, e -> newFile(), getKeyStroke(VK_N, CTRL_DOWN_MASK)),
+                createItem(TITLE_OPEN, e -> openFile(), getKeyStroke(VK_O, CTRL_DOWN_MASK)),
+                createItem(TITLE_SAVE, e -> save(), getKeyStroke(VK_S, CTRL_DOWN_MASK)),
+                createItem(TITLE_SAVE_AS, e -> saveAs(), getKeyStroke(VK_S, SHIFT_DOWN_MASK)),
+                createItem(TITLE_RELOAD_ALL, e -> reloadFromDisk(), getKeyStroke(VK_Y, ALT_DOWN_MASK)), null,
+                createItem(TITLE_TRANSLATE_UNICODE, e -> encodeUnicode(), getKeyStroke(VK_U, ALT_DOWN_MASK)),
+                createItem(TITLE_DECODE_UNICODE, e -> decodeUnicode(), getKeyStroke(VK_U, CTRL_DOWN_MASK)),
+                createItem(TITLE_UNICODE, e -> unicode(), getKeyStroke(VK_U, SHIFT_DOWN_MASK)), null,
+                createItem(TITLE_EXIT, e -> System.exit(514), getKeyStroke(VK_X, ALT_DOWN_MASK))));
         bar.add(createMenu(TITLE_FORMAT, createItem(TITLE_FONT, EditorComponent.this::format, getKeyStroke(VK_F, ALT_DOWN_MASK)),
-                createItem(TITLE_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK)),
+                createItem(TITLE_CHARSET, e -> changeCharset(), getKeyStroke(VK_T, ALT_DOWN_MASK)),
                 createItem(TITLE_DATE_FORMAT, e -> dateFormat(), getKeyStroke(VK_INSERT, SHIFT_DOWN_MASK)),
-                createItem(TITLE_FRAME_SETTINGS, e -> frameSetting(), getKeyStroke(VK_HOME, SHIFT_DOWN_MASK)),
-                createItem(TITLE_INSERT_TIME, e -> insertTime(), getKeyStroke(VK_INSERT, ALT_DOWN_MASK))
-        ));
+                createItem(TITLE_AUTO_SCROLL, e -> autoScroll(), getKeyStroke(VK_A, ALT_DOWN_MASK)),
+                createItem(TITLE_FRAME_SETTINGS, e -> frameSetting(), getKeyStroke(VK_HOME, SHIFT_DOWN_MASK))));
+        bar.add(createMenu(TITLE_EDIT, createItem(TITLE_FIND, e -> find(), getKeyStroke(VK_F, CTRL_DOWN_MASK)),
+                createItem(TITLE_REPLACE, e -> replace(), getKeyStroke(VK_R, CTRL_DOWN_MASK)),
+                createItem(TITLE_SELECT_ALL, e -> display.selectAll(), getKeyStroke(VK_A, CTRL_DOWN_MASK)), null,
+                createItem(TITLE_INSERT_TIME, e -> insertTime(), getKeyStroke(VK_INSERT, ALT_DOWN_MASK)),
+                createItem(TITLE_INSERT_DATE, e -> insertDate(Main.PROC.getProperty("date_format")), getKeyStroke(VK_D, ALT_DOWN_MASK))));
         bar.add(createMenu(TITLE_FRAME, createItem(TITLE_LANGUAGE, e -> switchLanguage(), getKeyStroke(VK_S, ALT_DOWN_MASK)),
                 createItem(TITLE_LOG_VIEW_OUT, e -> showNoEdit(Files.openOrDefault(new File("./output.log"), "Failed to open.")), getKeyStroke(VK_P, CTRL_DOWN_MASK)),
                 createItem(TITLE_LOG_VIEW_ERR, e -> showNoEdit(Files.openOrDefault(new File("./error.log"), "Failed to open.")), getKeyStroke(VK_P, ALT_DOWN_MASK))));
@@ -373,8 +395,126 @@ public final class EditorComponent extends JPanel implements Runnable {
                 createItem(TITLE_CLEAR_ERR, e -> clearFile(ERROR_LOG), getKeyStroke(VK_L, SHIFT_DOWN_MASK)),
                 createItem(TITLE_CLEAR_ALL, e -> clearFiles(OUTPUT_LOG, ERROR_LOG), getKeyStroke(VK_C, ALT_DOWN_MASK)),
                 createItem(TITLE_HELP_IMPL, e -> showNoEdit(Files.openOrDefault(new File("./data/help." + Main.PROC.getProperty("language_file")),
-                        "Failed to open.")), getKeyStroke(VK_H, ALT_DOWN_MASK))
-        ));
+                        "Failed to open.")), getKeyStroke(VK_H, ALT_DOWN_MASK)), null,
+                createItem(TITLE_HOW_TO_USE, e -> userManual(), getKeyStroke(VK_M, ALT_DOWN_MASK))));
+    }
+
+    private void reloadFromDisk () {
+        if (file != null) {
+            loadFile(file);
+        }
+    }
+
+    private void userManual () {
+
+    }
+
+    private void changeCharset () {
+        //TODO
+        final String name = (String) JOptionPane.showInputDialog(EditorComponent.this, NATIVE_LANG.getProperty("MESSAGE_CHARSET_CHANGE"),
+                NATIVE_LANG.getProperty("MESSAGE_CHARSET_CHANGE_TITLE"), JOptionPane.INFORMATION_MESSAGE, null,
+                PropertiesLoader.CHARSET_LIST.stream().map(Charset::displayName).toArray(String[]::new), charset.displayName());
+        if (name != null) {
+            charset = Charset.forName(name);
+            JOptionPane.showMessageDialog(null, NATIVE_LANG.getProperty("MESSAGE_CHARSET_SET") + charset);
+            try {
+                if (file == null) {
+                    return;
+                }
+                display.setText(Files.readDirectly(file, charset));
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        }
+    }
+
+    private void unicode () {
+        final var commonDisplay = getTextPane();
+        final var unicodeDisplay = getTextPane();
+        final JLabel annotation = new JLabel("Input common text at left part or input Unicode string at right part.");
+        final JPanel port = new JPanel(new BorderLayout());
+        port.add(annotation, BorderLayout.SOUTH);
+        port.add(new JPanel(new BorderLayout()) {{
+            setSize(100, 500);
+            add(new JButton("Convert to Unicode->"), BorderLayout.SOUTH);
+            add(new JButton("<-Convert to Common"), BorderLayout.NORTH);
+        }}, BorderLayout.CENTER);
+        commonDisplay.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped (KeyEvent e) {
+                final var unboxedStr = commonDisplay.getText();
+                try {
+                    final var doc = MessageDisplayFrame.getPureTextDocument(Unicode.encodeExcept(unboxedStr));
+                    unicodeDisplay.setDocument(doc);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    unicodeDisplay.setDocument(MessageDisplayFrame.getPureTextDocument("Waiting for input correct string..."));
+                }
+            }
+        });
+        unicodeDisplay.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped (KeyEvent e) {
+                final var unicodeStr = unicodeDisplay.getText();
+                try {
+                        final var doc = MessageDisplayFrame.getPureTextDocument(Unicode.decode(unicodeStr));
+                        commonDisplay.setDocument(doc);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    unicodeDisplay.setDocument(MessageDisplayFrame.getPureTextDocument("Waiting for input correct string..."));
+                }
+            }
+        });
+        final JFrame frame = new JFrame("Unicode Display");
+        frame.add(port);
+        frame.setSize(600, 500);
+        frame.setVisible(true);
+        port.add(new JScrollPane(commonDisplay) {{setSize(250, 500);}}, BorderLayout.EAST);
+        port.add(new JScrollPane(unicodeDisplay) {{setSize(250, 500);}}, BorderLayout.WEST);
+        commonDisplay.setSize(250, 500);
+        unicodeDisplay.setSize(250, 500);
+    }
+
+    private void decodeUnicode () {
+        try {
+            display.setText(Unicode.decode(display.getText()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void encodeUnicode () {
+        try {
+            display.setText(Unicode.encodeExcept(display.getText()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void autoScroll () {
+        final boolean state = !Boolean.parseBoolean(PROC.getProperty("auto_scroll"));
+        display.setAutoscrolls(state);
+        PROC.replace("auto_scroll", Boolean.toString(state));
+        try {
+            writeProc();
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(EditorComponent.this, e.getMessage());
+            return;
+        }
+        resetTitle();
+        Main.refreshAllTitle();
+    }
+
+    private void replace () {
+
+    }
+
+    private void find () {
+
     }
 
     private void insertTime () {
@@ -614,7 +754,7 @@ public final class EditorComponent extends JPanel implements Runnable {
             if (f == null) {
                 return;
             }
-            String name = JOptionPane.showInputDialog("input file name");
+            final String name = JOptionPane.showInputDialog("input file name");
             final File s = new File(f.getAbsolutePath() + '/' + name);
             if (!s.exists()) {
                 saveAs(s);
@@ -625,15 +765,23 @@ public final class EditorComponent extends JPanel implements Runnable {
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             ex.printStackTrace();
         } catch (IOException ioException) {
+            ioException.printStackTrace();
             JOptionPane.showMessageDialog(null, "Can not save file:" + ioException.getMessage());
         }
     }
 
     private JMenu createMenu (String menuName, JMenuItem... items) {
-        final JMenu menu = new JMenu(menuName) {{
-            Arrays.stream(items).forEach(this::add);
-        }};
-        final int insertPos = applierMenuItemTexts.size() - items.length;
+        int separatorAmount = 0;
+        final JMenu menu = new JMenu(menuName);
+        for (JMenuItem item : items) {
+            if (item != null) {
+                menu.add(item);
+            } else {
+                menu.addSeparator();
+                ++separatorAmount;
+            }
+        }
+        final int insertPos = applierMenuItemTexts.size() + separatorAmount - items.length;
         applierMenuItemTexts.add(insertPos, menu::setText);
         return menu;
     }
@@ -652,9 +800,9 @@ public final class EditorComponent extends JPanel implements Runnable {
     private void saveAs (File to) throws IOException {
         System.out.println("Start save file.");
         if (to == null) {
-            Files.write(file, display.getText());
+            Files.write(file, display.getText().getBytes(charset));
         } else {
-            Files.write(to, display.getText());
+            Files.write(to, display.getText().getBytes(charset));
         }
         System.out.println("Succ to save!");
     }
@@ -666,6 +814,7 @@ public final class EditorComponent extends JPanel implements Runnable {
     private void loadComp () {
         System.out.println("Loading comp...");
         final JScrollPane pane = new JScrollPane(display);
+        pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         add(pane, BorderLayout.CENTER);
         add(jvmStateDisplay, BorderLayout.SOUTH);
         display.addKeyListener(new KeyAdapter() {
@@ -730,8 +879,7 @@ public final class EditorComponent extends JPanel implements Runnable {
                 for (Character c : buffer) {
                     cs[i++] = c;
                 }
-                System.out.println(cs);
-                System.out.println(matcher.predict(new String(cs)));
+                System.out.println("Predict words:" + matcher.predict(new String(cs)));
                 Point p = display.getCaret().getMagicCaretPosition();
                 if (p == null) {
                     p = new Point(0, 15);
@@ -799,6 +947,7 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     @Override
     public void run () {
+        //Test reloadFromDisk edit.
         matcher.flush(display.getText());
     }
 

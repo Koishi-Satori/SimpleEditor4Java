@@ -1,14 +1,19 @@
 package top.kkoishi.lang;
 
+import java.nio.charset.Charset;
 import java.security.PrivilegedActionException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author KKoishi_
  * @param <T> The target.
  */
 public abstract class PropertiesLoader<T> {
+
+    public static final List<Charset> CHARSET_LIST = new CopyOnWriteArrayList<>(Charset.availableCharsets().values());
+
     private final List<T> result = new LinkedList<>();
 
     protected String in;
