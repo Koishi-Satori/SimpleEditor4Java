@@ -34,7 +34,6 @@ public class NetDataPackageSenderAndReceiver {
     protected static byte[] fileTransportEndMark = new byte[]{0X59, 0X75, 0X79, 0X75, 0X6B, 0X6F, 0X20, 0X73, 0X61, 0X6F,
             0X61, 0X20, 0X73, 0X69, 0X68, 0X61, 0X20, 0X73, 0X69, 0X68, 0X61};
 
-
     public static byte[] getFileTransportEndMark () {
         return fileTransportEndMark;
     }
@@ -102,7 +101,8 @@ public class NetDataPackageSenderAndReceiver {
         }
     }
 
-    public static void sendFile (Socket socket, String srcName, String dirPath, File src) throws IOException, FileTransportInterruptedException {
+    public static void sendFile (Socket socket, String srcName, String dirPath, File src) throws IOException,
+            FileTransportInterruptedException {
         sendBytes(socket, fileStartTransportMark);
         sendUtf8(socket, dirPath);
         sendUtf8(socket, srcName);

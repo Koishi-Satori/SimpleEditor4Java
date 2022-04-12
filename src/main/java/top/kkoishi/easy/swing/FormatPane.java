@@ -72,17 +72,6 @@ public final class FormatPane extends JPanel {
 
     private static final ConcurrentHashMap<String, Font> CUSTOM_FONT_SET = new ConcurrentHashMap<>();
 
-    private static Font[] defaultFonts;
-
-    static {
-        try {
-            defaultFonts = genFontArray();
-        } catch (PropertiesLoader.IllegalOrBadPropertyFormatException | IOException e) {
-            e.printStackTrace();
-            defaultFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-        }
-    }
-
     public static Font[] genFontArray () throws PropertiesLoader.IllegalOrBadPropertyFormatException, IOException {
         return getFonts(e -> JOptionPane.showMessageDialog(null, e.getMessage())).toArray(Font[]::new);
     }
@@ -98,7 +87,13 @@ public final class FormatPane extends JPanel {
     }
 
     public static Font[] getDefaultFonts () {
-        return defaultFonts;
+        try {
+            return genFontArray();
+        } catch (PropertiesLoader.IllegalOrBadPropertyFormatException | IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return new Font[0];
+        }
     }
 
     public static Font getFontOrDefault (String name, Font defaultValue) {
@@ -197,12 +192,7 @@ public final class FormatPane extends JPanel {
     }
 
     private void loadComp () {
-        try {
-            fontList.setListData(genFontArray());
-        } catch (PropertiesLoader.IllegalOrBadPropertyFormatException | IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
+        fontList.setListData(getDefaultFonts());
         fontList.setCellRenderer(new FontCellRender());
         final JScrollPane fontListPane = new JScrollPane(fontList);
         styleList.setListData(new String[] {"Plain(常规)", "Bold(粗体)", "Italic(斜体)", "Bold & Italic(粗斜体)"});

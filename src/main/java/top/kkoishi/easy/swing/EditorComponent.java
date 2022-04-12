@@ -8,6 +8,7 @@ import top.kkoishi.io.FileChooser;
 import top.kkoishi.io.Files;
 import top.kkoishi.io.OptionLoader;
 import top.kkoishi.lang.PropertiesLoader;
+import top.kkoishi.swing.IconButton;
 import top.kkoishi.swing.JVMStateDisplay;
 import top.kkoishi.swing.PopMenu;
 import top.kkoishi.util.EnhancedTrie;
@@ -16,6 +17,9 @@ import top.kkoishi.easy.util.PassageMatcher;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicTextUI;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -27,18 +31,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -116,6 +118,8 @@ public final class EditorComponent extends JPanel implements Runnable {
     public static String TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
     public static String TITLE_HOW_TO_USE = NATIVE_LANG.getProperty("TITLE_HOW_TO_USE");
     public static String TITLE_RELOAD_ALL = NATIVE_LANG.getProperty("TITLE_RELOAD_ALL");
+    public static String TITLE_STAT = NATIVE_LANG.getProperty("TITLE_STAT");
+    public static String TITLE_DICT = NATIVE_LANG.getProperty("TITLE_DICT");
 
     public static File backgroundFile = null;
 
@@ -128,10 +132,10 @@ public final class EditorComponent extends JPanel implements Runnable {
     static {
         MENU_ITEM_TEXTS.addAll(Arrays.asList(TITLE_FILE, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR, TITLE_OPEN, TITLE_SAVE,
                 TITLE_SAVE_AS, TITLE_RELOAD_ALL, TITLE_TRANSLATE_UNICODE, TITLE_DECODE_UNICODE, TITLE_UNICODE, TITLE_EXIT, TITLE_FORMAT,
-                TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS, TITLE_EDIT,
+                TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS, TITLE_STAT, TITLE_EDIT,
                 TITLE_FIND, TITLE_REPLACE, TITLE_SELECT_ALL, TITLE_INSERT_TIME, TITLE_INSERT_DATE, TITLE_FRAME,
                 TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
-                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE));
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE, TITLE_DICT));
     }
 
     /*-------------------------------------------------- Static Methods Start --------------------------------------------------*/
@@ -198,12 +202,14 @@ public final class EditorComponent extends JPanel implements Runnable {
         TITLE_LOG_VIEW_ERR = NATIVE_LANG.getProperty("TITLE_LOG_VIEW_ERR");
         TITLE_HOW_TO_USE = NATIVE_LANG.getProperty("TITLE_HOW_TO_USE");
         TITLE_RELOAD_ALL = NATIVE_LANG.getProperty("TITLE_RELOAD_ALL");
+        TITLE_DICT = NATIVE_LANG.getProperty("TITLE_DICT");
+        TITLE_STAT = NATIVE_LANG.getProperty("TITLE_STAT");
         applyChangeToMenuItemTextList(TITLE_FILE, TITLE_NEW_FRAME, TITLE_NEW_FRAME_AND_CR, TITLE_OPEN, TITLE_SAVE,
-                TITLE_SAVE_AS, TITLE_RELOAD_ALL, TITLE_TRANSLATE_UNICODE, TITLE_DECODE_UNICODE, TITLE_UNICODE, TITLE_EXIT,
-                TITLE_FORMAT, TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS,
-                TITLE_EDIT, TITLE_FIND, TITLE_REPLACE, TITLE_SELECT_ALL, TITLE_INSERT_TIME, TITLE_INSERT_DATE, TITLE_FRAME,
+                TITLE_SAVE_AS, TITLE_RELOAD_ALL, TITLE_TRANSLATE_UNICODE, TITLE_DECODE_UNICODE, TITLE_UNICODE, TITLE_EXIT, TITLE_FORMAT,
+                TITLE_FONT, TITLE_CHARSET, TITLE_DATE_FORMAT, TITLE_AUTO_SCROLL, TITLE_FRAME_SETTINGS, TITLE_STAT, TITLE_EDIT,
+                TITLE_FIND, TITLE_REPLACE, TITLE_SELECT_ALL, TITLE_INSERT_TIME, TITLE_INSERT_DATE, TITLE_FRAME,
                 TITLE_LANGUAGE, TITLE_LOG_VIEW_OUT, TITLE_LOG_VIEW_ERR, TITLE_HELP, TITLE_LOG_REPORT, TITLE_CLEAR_OUT,
-                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE);
+                TITLE_CLEAR_ERR, TITLE_CLEAR_ALL, TITLE_HELP_IMPL, TITLE_HOW_TO_USE, TITLE_DICT);
     }
 
     /**
@@ -260,6 +266,175 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     public static Font accessFont () {
         return new Font(fontName, Font.PLAIN, Integer.parseInt(Main.PROC.getProperty("font_size")));
+    }
+
+
+    private static void statistic (JTextComponent textComponent) {
+        JOptionPane.showMessageDialog(textComponent, NATIVE_LANG.getProperty("MESSAGE_STAT") +
+                textComponent.getText().length(), TITLE_STAT, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void dictEditor () {
+        final EnhancedTrie trie;
+        try {
+            final Properties dict = new Properties(128);
+            dict.load(new FileInputStream("./data/dict"));
+            trie = new EnhancedTrie();
+            for (final Object value : dict.values()) {
+                trie.addAll((String) value);
+            }
+            dict.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return;
+        }
+        final var words = trie.toMap();
+        trie.clear();
+        final var data = new Vector<String>(words.keySet()) {
+            int find (String word) {
+                return words.containsKey(word) ? 0 : -1;
+            }
+        };
+        final JTextField field = new JTextField("");
+        final JFrame jf = new JFrame(TITLE_DICT);
+        final JList<String> wordList = new JList<>(data);
+        wordList.addListSelectionListener(l -> field.setText(wordList.getSelectedValue()));
+        wordList.setToolTipText(NATIVE_LANG.getProperty("MESSAGE_DICT_CUR"));
+        final JButton add = new JButton(NATIVE_LANG.getProperty("MESSAGE_DICT_BUT_ADD"));
+        add.addActionListener(l -> {
+            final String val = field.getText();
+            if (val != null && val.length() != 0) {
+                if (data.find(val) != -1) {
+                    JOptionPane.showMessageDialog(null, "The value " + val + " is already exists!");
+                } else {
+                    words.put(val, 1);
+                    data.addElement(val);
+                    wordList.setListData(data);
+                }
+            }
+        });
+        final JButton del = new JButton(NATIVE_LANG.getProperty("MESSAGE_DICT_BUT_DEL"));
+        del.addActionListener(l -> {
+            final String val = wordList.getSelectedValue();
+            if (val == null) {
+                return;
+            }
+            data.remove(val);
+            wordList.setListData(data);
+        });
+        final JButton cancel = new JButton(NATIVE_LANG.getProperty("MESSAGE_DICT_BUT_CANCEL"));
+        cancel.addActionListener(l -> {
+            wordList.setListData(new String[0]);
+            data.clear();
+            jf.removeAll();
+            jf.dispose();
+            words.clear();
+        });
+        final JButton confirm = new JButton(NATIVE_LANG.getProperty("MESSAGE_DICT_BUT_CONFIRM"));
+        confirm.addActionListener(l -> {
+            final Properties nDict = new Properties(3 * data.size());
+            nDict.put("size", Integer.toString(data.size()));
+            int index = 0;
+            for (final String datum : data) {
+                nDict.put("dict_" + index++, datum);
+            }
+            try {
+                nDict.store(new FileOutputStream("./data/dict"), null);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+                nDict.clear();
+                return;
+            }
+            nDict.clear();
+            data.clear();
+            wordList.setListData(new String[0]);
+            jf.removeAll();
+            jf.dispose();
+            words.clear();
+        });
+        final JButton set = new JButton(NATIVE_LANG.getProperty("MESSAGE_DICT_BUT_SET"));
+        set.addActionListener(l -> {
+            final var sel = wordList.getSelectedValue();
+            if (sel == null) {
+                return;
+            }
+            final var val = field.getText();
+            if (val != null && val.length() != 0) {
+                final int index = data.find(val);
+                if (index != -1) {
+                    JOptionPane.showMessageDialog(null, "The value " + val + " is already exists.");
+                } else {
+                    data.setElementAt(val, data.indexOf(sel));
+                    words.remove(sel);
+                    words.put(val, 1);
+                    wordList.setListData(data);
+                }
+            }
+        });
+        jf.addWindowListener(new WindowAdapter() {
+            /**
+             * Invoked when a window is in the process of being closed.
+             * The close operation can be overridden at this point.
+             *
+             * @param e e
+             */
+            @Override
+            public void windowClosing (WindowEvent e) {
+                super.windowClosing(e);
+                wordList.setListData(new String[0]);
+                data.clear();
+                jf.removeAll();
+                jf.dispose();
+                words.clear();
+            }
+        });
+        final JPanel pane = new JPanel(null);
+        jf.setSize(500, 300);
+        final JScrollPane paneWords = new JScrollPane(wordList);
+        paneWords.setBounds(25, 15, 150, 220);
+        field.setBounds(200, 20, 200, 30);
+        add.setBounds(200, 65, 200, 20);
+        del.setBounds(200, 100, 200, 20);
+        set.setBounds(200, 135, 200, 20);
+        confirm.setBounds(200, 170, 200, 20);
+        cancel.setBounds(200, 215, 200, 20);
+        pane.add(paneWords);
+        pane.add(field);
+        pane.add(add);
+        pane.add(del);
+        pane.add(set);
+        pane.add(confirm);
+        pane.add(cancel);
+        jf.add(pane);
+        jf.setVisible(true);
+    }
+
+    private static void userManual () {
+        final MessageDisplayFrame.HTMLDisplayFrame f;
+        try {
+            f = MessageDisplayFrame.showHtml(
+                    Files.readDirectly(new File("./data/display/user_manual_en.html")),
+                    "User Manual");
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return;
+        }
+        f.setSize(500, 400);
+        f.addWindowListener(new WindowAdapter() {
+            /**
+             * Invoked when a window is in the process of being closed.
+             * The close operation can be overridden at this point.
+             *
+             * @param e e
+             */
+            @Override
+            public void windowClosing (WindowEvent e) {
+                f.removeAll();
+                f.dispose();
+            }
+        });
     }
 
     /*-------------------------------------------------- Static Method End --------------------------------------------------*/
@@ -381,7 +556,8 @@ public final class EditorComponent extends JPanel implements Runnable {
                 createItem(TITLE_CHARSET, e -> changeCharset(), getKeyStroke(VK_T, ALT_DOWN_MASK)),
                 createItem(TITLE_DATE_FORMAT, e -> dateFormat(), getKeyStroke(VK_INSERT, SHIFT_DOWN_MASK)),
                 createItem(TITLE_AUTO_SCROLL, e -> autoScroll(), getKeyStroke(VK_A, ALT_DOWN_MASK)),
-                createItem(TITLE_FRAME_SETTINGS, e -> frameSetting(), getKeyStroke(VK_HOME, SHIFT_DOWN_MASK))));
+                createItem(TITLE_FRAME_SETTINGS, e -> frameSetting(), getKeyStroke(VK_HOME, SHIFT_DOWN_MASK)), null,
+                createItem(TITLE_STAT, e -> statistic(display), getKeyStroke(VK_I, ALT_DOWN_MASK))));
         bar.add(createMenu(TITLE_EDIT, createItem(TITLE_FIND, e -> find(), getKeyStroke(VK_F, CTRL_DOWN_MASK)),
                 createItem(TITLE_REPLACE, e -> replace(), getKeyStroke(VK_R, CTRL_DOWN_MASK)),
                 createItem(TITLE_SELECT_ALL, e -> display.selectAll(), getKeyStroke(VK_A, CTRL_DOWN_MASK)), null,
@@ -396,7 +572,8 @@ public final class EditorComponent extends JPanel implements Runnable {
                 createItem(TITLE_CLEAR_ALL, e -> clearFiles(OUTPUT_LOG, ERROR_LOG), getKeyStroke(VK_C, ALT_DOWN_MASK)),
                 createItem(TITLE_HELP_IMPL, e -> showNoEdit(Files.openOrDefault(new File("./data/help." + Main.PROC.getProperty("language_file")),
                         "Failed to open.")), getKeyStroke(VK_H, ALT_DOWN_MASK)), null,
-                createItem(TITLE_HOW_TO_USE, e -> userManual(), getKeyStroke(VK_M, ALT_DOWN_MASK))));
+                createItem(TITLE_HOW_TO_USE, e -> userManual(), getKeyStroke(VK_M, ALT_DOWN_MASK)), null,
+                createItem(TITLE_DICT, e -> dictEditor(), getKeyStroke(VK_D, ALT_DOWN_MASK))));
     }
 
     private void reloadFromDisk () {
@@ -405,12 +582,7 @@ public final class EditorComponent extends JPanel implements Runnable {
         }
     }
 
-    private void userManual () {
-
-    }
-
     private void changeCharset () {
-        //TODO
         final String name = (String) JOptionPane.showInputDialog(EditorComponent.this, NATIVE_LANG.getProperty("MESSAGE_CHARSET_CHANGE"),
                 NATIVE_LANG.getProperty("MESSAGE_CHARSET_CHANGE_TITLE"), JOptionPane.INFORMATION_MESSAGE, null,
                 PropertiesLoader.CHARSET_LIST.stream().map(Charset::displayName).toArray(String[]::new), charset.displayName());
@@ -429,7 +601,8 @@ public final class EditorComponent extends JPanel implements Runnable {
         }
     }
 
-    private void unicode () {
+    private static void unicode () {
+        // FIXME: 2022/4/12 display error.
         final var commonDisplay = getTextPane();
         final var unicodeDisplay = getTextPane();
         final JLabel annotation = new JLabel("Input common text at left part or input Unicode string at right part.");
@@ -458,8 +631,8 @@ public final class EditorComponent extends JPanel implements Runnable {
             public void keyTyped (KeyEvent e) {
                 final var unicodeStr = unicodeDisplay.getText();
                 try {
-                        final var doc = MessageDisplayFrame.getPureTextDocument(Unicode.decode(unicodeStr));
-                        commonDisplay.setDocument(doc);
+                    final var doc = MessageDisplayFrame.getPureTextDocument(Unicode.decode(unicodeStr));
+                    commonDisplay.setDocument(doc);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     unicodeDisplay.setDocument(MessageDisplayFrame.getPureTextDocument("Waiting for input correct string..."));
@@ -470,8 +643,12 @@ public final class EditorComponent extends JPanel implements Runnable {
         frame.add(port);
         frame.setSize(600, 500);
         frame.setVisible(true);
-        port.add(new JScrollPane(commonDisplay) {{setSize(250, 500);}}, BorderLayout.EAST);
-        port.add(new JScrollPane(unicodeDisplay) {{setSize(250, 500);}}, BorderLayout.WEST);
+        port.add(new JScrollPane(commonDisplay) {{
+            setSize(250, 500);
+        }}, BorderLayout.EAST);
+        port.add(new JScrollPane(unicodeDisplay) {{
+            setSize(250, 500);
+        }}, BorderLayout.WEST);
         commonDisplay.setSize(250, 500);
         unicodeDisplay.setSize(250, 500);
     }
@@ -514,7 +691,25 @@ public final class EditorComponent extends JPanel implements Runnable {
     }
 
     private void find () {
-
+        final JPopupMenu dis = new JPopupMenu();
+        final JTextField input = new JTextField();
+        input.setToolTipText("Input word to be searched here.");
+        final JPanel container = new JPanel(new BorderLayout());
+        container.add(input, BorderLayout.CENTER);
+        dis.add(container);
+        final IconButton reset = new IconButton(IconButton.getIcon(new File("./data/icon/find_reset_normal.png")),
+                IconButton.getIcon(new File("./data/icon/find_reset_enable.png")),
+                IconButton.getIcon(new File("./data/icon/find_reset_normal.png")),
+                NATIVE_LANG.getProperty("MESSAGE_FIND_BUT_RESET"));
+        final JPanel secContainer = new JPanel(new BorderLayout());
+        secContainer.add(reset, BorderLayout.WEST);
+        final JLabel resDisplay = new JLabel("\t 0 results \t");
+        secContainer.add(resDisplay, BorderLayout.CENTER);
+        dis.add(secContainer);
+        dis.show(EditorComponent.this, 0, 0);
+        dis.setPopupSize(300, 60);
+        final Highlighter oldVar = display.getHighlighter();
+        System.out.println(oldVar);
     }
 
     private void insertTime () {
@@ -589,7 +784,7 @@ public final class EditorComponent extends JPanel implements Runnable {
         new Thread(task).start();
     }
 
-    private void showNoEdit (String text) {
+    private static void showNoEdit (String text) {
         new MessageDisplayFrame("Read Only Viewer", MessageDisplayFrame.getPureTextDocument(text));
     }
 
@@ -660,7 +855,6 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     @SuppressWarnings("all")
     private void format (ActionEvent e) {
-        //TODO:finish format frame.
         new Thread(() -> {
             final var fp = FormatPane.display(display.getFont());
             while (!fp.isDisposed()) {
