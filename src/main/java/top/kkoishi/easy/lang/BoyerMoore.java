@@ -14,8 +14,7 @@ public final class BoyerMoore {
 //    public static void main (String[] args) {
 //        String text = "HERE IS A SIMPLE EXAMPLE EXAMPLE EXAMPLE";
 //        String pattern = "EXAMPLE";
-//        BoyerMoore bm = new BoyerMoore();
-//        System.out.println(bm.boyerMoore(pattern, text));
+//        System.out.println(BoyerMoore.boyerMoore(pattern, text));
 //    }
 
     private static void preBmBc (String pattern, int patLength, Map<String, Integer> bmBc) {

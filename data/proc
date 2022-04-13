@@ -1,8 +1,8 @@
-#Sat Apr 02 12:55:50 CST 2022
+#Wed Apr 13 21:42:43 CST 2022
 pre_y=400
-pre_x=650
 replace_tab=4
-language_file=cn
+pre_x=650
+language_file=en
 font_size=15
 title=Editor with Auto Complete Powered by KKoishi_
 auto_scroll=false

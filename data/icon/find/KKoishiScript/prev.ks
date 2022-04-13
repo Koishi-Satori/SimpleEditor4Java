@@ -1,0 +1,13 @@
+create 30 30 prev;
+changedir C:/Users/DELL/Desktop;
+setcolor white;
+fill -rect 0 0 30 30;
+setcolor black;
+fillp 4 14 5 14 25 16 25 16 5;
+draw -line 15 5 10 10;
+draw -line 14 5 9 10;
+draw -line 13 5 8 10;
+draw -line 14 5 19 10;
+draw -line 15 5 20 10;
+draw -line 16 5 21 10;
+export;

@@ -1,0 +1,110 @@
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:33]Closing the frame
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:33]Succ to uninstall comp and threads.
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:39]Decode data in dat file state:true
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:39]Delete temp file state:true
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:39]Delete temp file state:true
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:39]Env:try open file
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Load text pane succ:javax.swing.JTextPane[,0,0,0x0,invalid,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@6ab7a896,flags=33554728,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=255,g=0,b=255],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=javax.swing.plaf.InsetsUIResource[top=3,left=3,bottom=3,right=3],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=java.awt.Color[r=255,g=175,b=175],kit=javax.swing.text.StyledEditorKit@7920ba90,typeHandlers={text/plain=javax.swing.text.StyledEditorKit@7920ba90}]-->AutoScroll State:false
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:struct
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:scanf
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:java
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:else
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:if
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:case
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:std
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:kkoishi
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:cout
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:byte
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:double
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:io
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:var
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:enum
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:extend
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:exit
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:util
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:long
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:out
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:goto
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:yield
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:include
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:break
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:abstract
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:char
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:auto
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:main
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:float
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:while
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:continue
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:new
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:static
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:void
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:sizeof
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:throws
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:final
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:nullptr
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:private
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:const
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:import
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:string
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:for
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:cin
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:interface
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:printf
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:switch
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:println
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:public
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:lang
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:class
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:false
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:go
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:kotlin
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:length
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:args
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:boolean
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:clone
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:short
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:unsigned
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:golang
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:List
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:export
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Reading word:LinkedList
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Finish load Trie from Dict.
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:New Frame(Shift+N)->Key Stroke:shift pressed N
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:New Frame and Create(Ctrl+N)->Key Stroke:ctrl pressed N
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Open(Ctrl+O)->Key Stroke:ctrl pressed O
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Save(Ctrl+S)->Key Stroke:ctrl pressed S
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Save As(Shift+S)->Key Stroke:shift pressed S
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Reload All From Disk(Alt+Y)->Key Stroke:alt pressed Y
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Translate Unicode(Alt+U)->Key Stroke:alt pressed U
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Decode From Unicode(Ctrl+U)->Key Stroke:ctrl pressed U
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Unicode Converter(Shift+U)->Key Stroke:shift pressed U
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Exit(Alt+X)->Key Stroke:alt pressed X
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Font(Alt+F)->Key Stroke:alt pressed F
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Charset(Alt+T)->Key Stroke:alt pressed T
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Date Format->Key Stroke:shift pressed INSERT
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Auto Scroll  |  Disabled->Key Stroke:alt pressed A
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Frame Settings->Key Stroke:shift pressed HOME
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Statistic(Alt+D)->Key Stroke:alt pressed I
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Find(Ctrl+F)->Key Stroke:ctrl pressed F
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Replace(Ctrl+R)->Key Stroke:ctrl pressed R
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Select All(Ctrl+A)->Key Stroke:ctrl pressed A
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Insert Time(Alt+Insert)->Key Stroke:alt pressed INSERT
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Insert Date(Alt+D)->Key Stroke:alt pressed D
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Switch Language To Chinese(Alt+S)->Key Stroke:alt pressed S
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Output Log Viewer->Key Stroke:ctrl pressed P
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Error Log Viewer->Key Stroke:alt pressed P
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Report Error(Alt+M)->Key Stroke:alt pressed M
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Clear Output Log(Ctrl+C)->Key Stroke:ctrl pressed L
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Clear Error Log(Shift+C)->Key Stroke:shift pressed L
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Clear All log(Alt+C)->Key Stroke:alt pressed C
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Help Document(Ctrl+H)->Key Stroke:alt pressed H
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:User Manual(Alt+M)->Key Stroke:alt pressed M
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Creating MenuItem:Edit Initial Dict(Alt+I)->Key Stroke:alt pressed D
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Loading comp...
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Initialing threads...
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Finish init editor core!
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Successfully load icons!
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Success to load file:.\test.cpp
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:40]Start env threads.
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:51]Closing the frame
+[KKoishi_OutputLogger@LogLevel:ALL][2022-04-13 10:15:51]Succ to uninstall comp and threads.

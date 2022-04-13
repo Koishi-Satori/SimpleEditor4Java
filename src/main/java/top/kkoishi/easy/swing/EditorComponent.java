@@ -17,6 +17,8 @@ import top.kkoishi.easy.util.PassageMatcher;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicTextUI;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
@@ -25,14 +27,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -467,6 +462,8 @@ public final class EditorComponent extends JPanel implements Runnable {
 
     private Charset charset = StandardCharsets.UTF_8;
 
+    private final FindPopup findPopup = FindPopup.getInstance(display);
+
     /*-------------------------------------------------- Field End --------------------------------------------------*/
 
     public void setChangeParentTitle (Consumer<String> changeParentTitle) {
@@ -691,25 +688,7 @@ public final class EditorComponent extends JPanel implements Runnable {
     }
 
     private void find () {
-        final JPopupMenu dis = new JPopupMenu();
-        final JTextField input = new JTextField();
-        input.setToolTipText("Input word to be searched here.");
-        final JPanel container = new JPanel(new BorderLayout());
-        container.add(input, BorderLayout.CENTER);
-        dis.add(container);
-        final IconButton reset = new IconButton(IconButton.getIcon(new File("./data/icon/find_reset_normal.png")),
-                IconButton.getIcon(new File("./data/icon/find_reset_enable.png")),
-                IconButton.getIcon(new File("./data/icon/find_reset_normal.png")),
-                NATIVE_LANG.getProperty("MESSAGE_FIND_BUT_RESET"));
-        final JPanel secContainer = new JPanel(new BorderLayout());
-        secContainer.add(reset, BorderLayout.WEST);
-        final JLabel resDisplay = new JLabel("\t 0 results \t");
-        secContainer.add(resDisplay, BorderLayout.CENTER);
-        dis.add(secContainer);
-        dis.show(EditorComponent.this, 0, 0);
-        dis.setPopupSize(300, 60);
-        final Highlighter oldVar = display.getHighlighter();
-        System.out.println(oldVar);
+        findPopup.show(EditorComponent.this, 0, 0);
     }
 
     private void insertTime () {
